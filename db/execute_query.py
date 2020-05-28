@@ -28,7 +28,7 @@ def execute_query(query: str, data=None) -> Optional[list]:
     with connection as c:
         cursor = c.cursor()
         try:
-            cursor.execute(query, data)
+            cursor.executemany(query, data)
         except sqlite3.Error as e:
             db_loger.error(e)
             c.rollback()

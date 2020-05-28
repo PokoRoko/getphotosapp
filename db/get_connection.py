@@ -15,19 +15,3 @@ def get_connection_to_db(db_name: str = 'getphotosapp.db') -> sqlite3.Connection
         loger.debug('Created connection to db')
         sqlite3.register_adapter(list, lambda x: ','.join(map(lambda y: str(y), x)))
         return connection
-
-
-if __name__ == '__main__':
-    """
-    тестирование работы функции
-    """
-    with get_connection_to_db() as connection:
-        lst = ['one', 'two']
-        cursor = connection.cursor()
-        cursor.execute("""CREATE TABLE test
-                           (test list)
-                        """)
-        cursor.execute(f"""insert into test(test) values (?)""", (lst,))
-        connection.commit()
-        cursor.execute("""select * from test""")
-        print(cursor.fetchone()[0])

@@ -29,15 +29,10 @@ def create_db():
     connection = get_connection_to_db()
     with connection as c:
         cursor = c.cursor()
-        try:
-            with open('./db/create_table_query.sql') as q1:
-                create_table_db: str = q1.read()
-                cursor.execute(create_table_db)
-                db_create_loger.info('DataBase created')
-        except sqlite3.Error as e:
-                db_create_loger.error(e)
-                c.rollback()
-                return
+        with open('./db/create_table_query.sql') as q1:
+            create_table_db: str = q1.read()
+            cursor.execute(create_table_db)
+            db_create_loger.info('DataBase created')
 
 
 

@@ -4,7 +4,7 @@ from loger import create_loger
 from settings import key
 
 
-def get_all_photo_func() -> dict:
+def get_all_photo_func() -> list:
     """
     Функция запроса всех фотографий с вашей страницы
     :key - ключ авторизации для вашего приложения, должен быть в окружении.
@@ -24,4 +24,5 @@ def get_all_photo_func() -> dict:
         else:
             print('Success!')
             error_log.debug('Requested successfully')
-        return (response.json())
+        res: dict = response.json()
+        return res['response']['items']

@@ -1,15 +1,44 @@
 import sqlite3
-from db.get_connection import get_connection_to_db
 from loger import create_loger
 from typing import Optional
 
-"""
-TODO:
-* Сейчас использование SELECT запросов возможно только в том случае если:
-- до слова SELECT нет никаких символов
-- SELECT написано большими буквами
-Необходимо добавить более гибкое поведение.
-"""
+
+
+def get_connection_to_db(db_name: str = 'getphotosapp.db') -> sqlite3.Connection:
+    """
+    - создает базу данных getphotosapp.db или присоединяется к ней, если она создана
+    - возвращает объект sqlite3.Connection
+    - особенность в том, что соединение происходит с учетом объявленных типов.
+    - добавлена поддержка ненативного типа list с помощью конвертера и адаптера
+    """
+    loger = create_loger(get_connection_to_db.__name__)
+
+    with sqlite3.connect(db_name, detect_types=sqlite3.PARSE_DECLTYPES) as connection:
+        loger.debug('Created connection to db')
+        sqlite3.register_adapter(list, lambda x: ','.join(map(lambda y: str(y), x)))
+        return connection
+
+
+def create_db():
+    """
+    Функция создания БД
+    :return:
+    возвращает ошибку в случае неуспеха
+    """
+    db_create_loger = create_loger(create_db.__name__)
+    connection = get_connection_to_db()
+    with connection as c:
+        cursor = c.cursor()
+        try:
+            with open('./db/create_table_query.sql') as q1:
+                create_table_db: str = q1.read()
+                cursor.execute(create_table_db)
+                db_create_loger.info('DataBase created')
+        except sqlite3.Error as e:
+                db_create_loger.error(e)
+                c.rollback()
+                return
+
 
 
 def execute_query(query: str, data=None) -> Optional[list]:
@@ -23,10 +52,15 @@ def execute_query(query: str, data=None) -> Optional[list]:
     При использовании SELECT комментарии нужно указывать после SQL выражения из-за startswith
     """
     db_loger = create_loger(execute_query.__name__)
+
     data: Optional[dict] = {} if data is None else data
     connection = get_connection_to_db()
     with connection as c:
         cursor = c.cursor()
+        if query.startswith('INSERT'):
+            cursor.execute("""SELECT count(name) FROM sqlite_master WHERE type='tbale' AND name='photos' """)
+            if cursor.fetchone()[0]==0:
+                create_db()
         try:
             cursor.executemany(query, data)
         except sqlite3.Error as e:
@@ -37,11 +71,3 @@ def execute_query(query: str, data=None) -> Optional[list]:
             c.commit()
         if query.startswith('SELECT'):
             return cursor.fetchall()
-
-
-if __name__ == '__main__':
-    """
-    Тестирование работы функции.
-    """
-    with open('../db/create_table_query.sql') as query:
-        execute_query(query.read())

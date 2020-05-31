@@ -53,7 +53,7 @@ def execute_query(query: str, data=None) -> Optional[list]:
     with connection as c:
         cursor = c.cursor()
         if query.startswith('INSERT'):
-            cursor.execute("""SELECT count(name) FROM sqlite_master WHERE type='tbale' AND name='photos' """)
+            cursor.execute("""SELECT count(name) FROM sqlite_master WHERE type='table' AND name='photos' """)
             if cursor.fetchone()[0]==0:
                 create_db()
         try:

@@ -56,6 +56,15 @@ def execute_query(query: str, data=None) -> Optional[list]:
             cursor.execute("""SELECT count(name) FROM sqlite_master WHERE type='table' AND name='photos' """)
             if cursor.fetchone()[0]==0:
                 create_db()
+        if query.startswith('SELECT'):
+            try:
+                cursor.execute(query)
+            except sqlite3.Error as e:
+                db_loger.error(e)
+                c.rollback()
+                return
+            else:
+                return cursor.fetchall()
         try:
             cursor.executemany(query, data)
         except sqlite3.Error as e:
@@ -64,5 +73,3 @@ def execute_query(query: str, data=None) -> Optional[list]:
             return
         else:
             c.commit()
-        if query.startswith('SELECT'):
-            return cursor.fetchall()

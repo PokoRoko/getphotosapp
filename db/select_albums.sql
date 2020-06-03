@@ -1,0 +1,1 @@
+SELECT album_id FROM photos GROUP BY album_id;

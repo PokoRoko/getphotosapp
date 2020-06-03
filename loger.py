@@ -1,6 +1,6 @@
 import logging
 import os
-import requests
+
 
 def create_loger(name: str, level: int = 20):
     """

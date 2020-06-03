@@ -18,11 +18,11 @@ def add_photo_func(photos):
                         'owner_id':'',
                         'has_tags':'',
                         'height':'',
-                        'source_1280_link':'',
-                        'source_130_link':'',
-                        'source_604_link':'',
-                        'source_75_link':'',
-                        'source_807_link':'',
+                        'photo_1280':'',
+                        'photo_130':'',
+                        'photo_604':'',
+                        'photo_75':'',
+                        'photo_807':'',
                         'post_id':'',
                         'text':'',
                         'width':'',
@@ -38,16 +38,20 @@ def add_photo_func(photos):
         bigest_photo_size = max(num_list)
         try:
             response = requests.get(i['photo_' + str(bigest_photo_size)])
-            i['photos'] = response.content
+            i['photo'] = response.content
         except:
             loger.info("Can't upload photo")
     if photos:
-        for key in default_dict.keys():
-            if key not in photos.keys():
-                photos.setdefault(key, '')
+        for i in photos:
+            for key in default_dict.keys():
+                if key not in i.keys():
+                    i.setdefault(key, '')
         with open ('db/insert_photos.sql') as q1:
             insert_photo: str = q1.read()
-            execute_query(insert_photo, data=photos)
-            loger.info('Data was loaded successfully')
+            try:
+                execute_query(insert_photo, data=photos)
+                loger.info('Data was loaded successfully')
+            except:
+                loger.error('Error while executing SQL query')
     else:
         loger.info("No data given to func, can't update db")

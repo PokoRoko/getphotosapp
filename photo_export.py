@@ -9,7 +9,6 @@ def _create_photo_folders():
     папки созданы локально в проекте.
     """
     path: str = './photos'
-    folder_name: str = 'test1'
     folders: dict = _get_folders()
     for f in folders:
         name: str = ('album' + str(f[0]))
@@ -51,5 +50,4 @@ def create_local_copy_photo():
         for r in res:
             path: str = './photos/' + 'album' + str(r[0]) + '/photo' + str(r[1]) + '.jpeg'
             with open(path, 'wb') as file:
-                file.write(r[3])
-                file.close()
+                file.write(r[2])

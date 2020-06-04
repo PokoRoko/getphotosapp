@@ -70,21 +70,34 @@ def _execute_for_select(query):
             return cursor.fetchall()
 
 def _execute_many(query: str, data: Optional):
-        db_loger = create_loger(_execute_many.__name__)
-        connection = _get_connection_to_db()
-        with connection as c:
-            cursor = c.cursor()
-        try:
-            cursor.executemany(query, data)
-        except sqlite3.Error as e:
-            db_loger.error(e)
-            c.rollback()
-            return
-        else:
-            c.commit()
+    """
+    Фнукция обогащения БД данными по принципу executemany
+    :param query:
+    запрос SQL
+    :param data:
+    данные для загрузки
+    :return:
+    """
+    db_loger = create_loger(_execute_many.__name__)
+    connection = _get_connection_to_db()
+    with connection as c:
+        cursor = c.cursor()
+    try:
+        cursor.executemany(query, data)
+    except sqlite3.Error as e:
+        db_loger.error(e)
+        c.rollback()
+        return
+    else:
+        c.commit()
         return
 
+
 def _if_db_not_exist():
+    """
+    Проверяет существует ли база, если нет, вызывает функцию создания
+    :return:
+    """
     db_loger = create_loger(_if_db_not_exist.__name__)
     connection = _get_connection_to_db()
     with connection as c:

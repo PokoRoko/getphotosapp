@@ -2,6 +2,7 @@ import sqlite3
 from loger import create_loger
 from typing import Optional
 
+
 def execute_query(query: str, data=None) -> Optional[list]:
     """
     функция пробует исполнить sql запрос:
@@ -20,6 +21,7 @@ def execute_query(query: str, data=None) -> Optional[list]:
         res: list = _execute_for_select(query)
         return res
 
+
 def _get_connection_to_db(db_name: str = 'getphotosapp.db') -> sqlite3.Connection:
     """
     - создает базу данных getphotosapp.db или присоединяется к ней, если она создана
@@ -33,6 +35,7 @@ def _get_connection_to_db(db_name: str = 'getphotosapp.db') -> sqlite3.Connectio
         loger.debug('Created connection to db')
         sqlite3.register_adapter(list, lambda x: ','.join(map(lambda y: str(y), x)))
         return connection
+
 
 def _create_db():
     """
@@ -48,7 +51,7 @@ def _create_db():
             create_table_db: str = q1.read()
             cursor.execute(create_table_db)
             db_create_loger.debug('DataBase created')
-        return
+
 
 def _execute_for_select(query):
     """
@@ -65,9 +68,9 @@ def _execute_for_select(query):
         except sqlite3.Error as e:
             db_loger.error(e)
             c.rollback()
-            return
         else:
             return cursor.fetchall()
+
 
 def _execute_many(query: str, data: Optional):
     """
@@ -87,10 +90,8 @@ def _execute_many(query: str, data: Optional):
         except sqlite3.Error as e:
             db_loger.error(e)
             c.rollback()
-            return
         else:
             c.commit()
-            return
 
 
 def _if_db_not_exist():
@@ -102,6 +103,5 @@ def _if_db_not_exist():
     with connection as c:
         cursor = c.cursor()
         cursor.execute("""SELECT count(name) FROM sqlite_master WHERE type='table' AND name='photos' """)
-        if cursor.fetchone()[0]==0:
+        if cursor.fetchone()[0] == 0:
             _create_db()
-        return

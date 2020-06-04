@@ -1,0 +1,10 @@
+version: '3.0'
+services:
+  get_photos_app:
+    build: .
+    container_name: getphotosapp
+    image: getphotos
+    env_file: .env
+    entrypoint: python3 main.py
+    volumes:
+      - ./:/usr/src/app

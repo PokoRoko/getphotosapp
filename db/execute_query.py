@@ -47,7 +47,7 @@ def _create_db():
         with open('./db/create_table_query.sql') as q1:
             create_table_db: str = q1.read()
             cursor.execute(create_table_db)
-            db_create_loger.info('DataBase created')
+            db_create_loger.debug('DataBase created')
         return
 
 def _execute_for_select(query):
@@ -82,15 +82,15 @@ def _execute_many(query: str, data: Optional):
     connection = _get_connection_to_db()
     with connection as c:
         cursor = c.cursor()
-    try:
-        cursor.executemany(query, data)
-    except sqlite3.Error as e:
-        db_loger.error(e)
-        c.rollback()
-        return
-    else:
-        c.commit()
-        return
+        try:
+            cursor.executemany(query, data)
+        except sqlite3.Error as e:
+            db_loger.error(e)
+            c.rollback()
+            return
+        else:
+            c.commit()
+            return
 
 
 def _if_db_not_exist():
@@ -98,7 +98,6 @@ def _if_db_not_exist():
     Проверяет существует ли база, если нет, вызывает функцию создания
     :return:
     """
-    db_loger = create_loger(_if_db_not_exist.__name__)
     connection = _get_connection_to_db()
     with connection as c:
         cursor = c.cursor()

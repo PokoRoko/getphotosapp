@@ -33,7 +33,7 @@ def _get_photo_size(data : dict) -> dict:
             i = response.content
             photo['photo'] = response.content
         except:
-            loger.info("Can't upload photo")
+            loger.error("Can't upload photo")
     final: dict = _add_none_values(data)
     return  final
 
